@@ -1,0 +1,32 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>MultiAuth Helper</title></head><body>
+<script type="text/javascript">
+(function(w){
+ var  o=w.opener||w.parent||w,
+ l = window.location,
+ u = l.toString(),
+ v = u.match(/requestId=/g) ? decodeURIComponent(u.match(/requestId=([^&]+)/)[1]) : 0;
+ rd = v && v.match(/m=/g) ? decodeURIComponent(v.match(/m=([^&]+)/)[1]) : 0,
+ st = v && v.match(/st=/g) ? decodeURIComponent(v.match(/st=([^&]+)/)[1]) : 0;//end var
+if(rd && document.cookie.replace(/(?:(?:^|.*;\s*)authState\s*\=\s*([^;]*).*$)|^.*$/, "$1") === st){//full redirect
+    document.cookie='authState=; domain=.'+location.hostname+'; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    l.href = l.protocol + "//" + l.host + rd;
+}
+else if(typeof o.jQuery.multiAuth.stateCheck != 'undefined' && o.jQuery.multiAuth.stateCheck.validate(st)){//popup or iframe
+    o.jQuery.multiAuth.stateCheck.reset();
+
+    if (o.triggerAolAuthResponse ) {
+        o.triggerAolAuthResponse(w.location);
+    }
+    else{
+        o.jQuery(o.document).trigger('aol-ma-response',w.location);
+    }
+    w.close()
+}
+else{//state check has failed
+    if(!rd){//don't redirect back when in full redirect
+        w.close();
+    }
+}
+})(window);
+</script>
+</body></html>
